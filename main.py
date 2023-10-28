@@ -19,29 +19,42 @@ linksUrl = []
 
 
 def printData():
+    global remaining_time
     for i in entryList:
         link = i.get()
         linksUrl.append(link)
     call2()
+    # remaining_time = timeVar.get()*60 
+    # print(remaining_time)
 
 
 def create_new_window():
-
     global new_window
+    global remaining_time 
+    remaining_time = timeVar.get()*60
     root.withdraw()  # Hide the main window
     new_window = Toplevel()  # Create a new top-level window
     new_window.title("Time Left")
     new_window.geometry('400x500')
+    def update_timer():
+        # remaining_time = timeVar.get()*60
+        global remaining_time
+        if remaining_time > 0:
+            remaining_time -= 1
+            minutes=remaining_time//60
+            seconds=remaining_time%60
+            timer_label.config(text=f"Time Left: {minutes}:{seconds} sec")
+            timer_label.after(1000, update_timer)
+        else:
+            timer_label.config(text="Time's up!")
+    
+    timer_label = Label(new_window, text=f"Time Left: {remaining_time} sec", font=("Helvetica", 16))
+    timer_label.pack(padx=20, pady=20)
+    
+    update_timer()
 
-    # Add widgets to the new window
-    label = Label(new_window, text="Wait for 25 mins")
-    label.pack()
-
-    button = Button(new_window, text='STOP')
-    button.pack()
 
 
-print(create_new_window.__doc__)
 
 
 def add_entry():
@@ -89,11 +102,12 @@ def deleteFunc():
 
 def call2():
     append()
+    
     create_new_window()
     print(timeVar.get())
 
     def timer_thread():
-        time.sleep(timeVar.get())
+        time.sleep((timeVar.get())*60)
         # Perform actions after the timer expires here
         deleteFunc()
         root.deiconify()
@@ -105,7 +119,6 @@ def call2():
 
     # Call this function when you want to start the timer
     start_timer()
-
 
 addBtn = Button(root, text='add', command=add_entry)
 addBtn.pack()
