@@ -1,7 +1,7 @@
 # 'C:\Windows\System32\drivers\etc\hosts'
 from tkinter import *
-import time
-import threading
+# import time
+# import threading
 
 
 root = Tk()
@@ -19,29 +19,51 @@ linksUrl = []
 
 
 def printData():
+    
+    global linksUrl
     for i in entryList:
         link = i.get()
         linksUrl.append(link)
     call2()
 
 
-def create_new_window():
+def stop_timer():
+    global entryList
+    global linksUrl
+    deleteFunc()
+    root.deiconify()
+    new_window.destroy()
 
+
+def create_new_window():
     global new_window
+    global remaining_time 
+    remaining_time = timeVar.get()*60
     root.withdraw()  # Hide the main window
     new_window = Toplevel()  # Create a new top-level window
-    new_window.title("Time Left")
+    new_window.title("Foocusooze")
     new_window.geometry('400x500')
+    stopBtn = Button(new_window,text='STOP',command=stop_timer)
+    stopBtn.pack()
+    def update_timer():
+        # remaining_time = timeVar.get()*60
+        global remaining_time
+        if remaining_time > 0:
+            remaining_time -= 1
+            mins = remaining_time//60
+            secs = remaining_time%60
+            timer_label.config(text=f"Time Left: {mins}: {secs} sec")
+            timer_label.after(1000, update_timer)
+        else:
+            timer_label.config(text="Time's up!")
+            if len(linksUrl)!=0:
+                stop_timer()
+    
+    timer_label = Label(new_window, text=f"Time Left: {remaining_time} sec", font=("Helvetica", 16))
+    timer_label.pack(padx=20, pady=20)
+    
+    update_timer()
 
-    # Add widgets to the new window
-    label = Label(new_window, text="Wait for 25 mins")
-    label.pack()
-
-    button = Button(new_window, text='STOP')
-    button.pack()
-
-
-print(create_new_window.__doc__)
 
 
 def add_entry():
@@ -71,7 +93,8 @@ def append():
 
 
 def deleteFunc():
-
+    global entryList
+    global linksUrl
     with open('trial.txt', 'r') as file:
         file_contents = file.read()
 
@@ -89,23 +112,25 @@ def deleteFunc():
 
 def call2():
     append()
+    
     create_new_window()
     print(timeVar.get())
 
-    def timer_thread():
-        time.sleep(timeVar.get())
-        # Perform actions after the timer expires here
-        deleteFunc()
-        root.deiconify()
-        new_window.destroy()
+    # def timer_thread():
+    #     time.sleep((timeVar.get())*60)
+    #     # Perform actions after the timer expires here
+    #     deleteFunc()
+    #     root.deiconify()
+    #     new_window.destroy()
 
-    def start_timer():
-        timer = threading.Thread(target=timer_thread)
-        timer.start()
+    # def start_timer():
+    #     timer = threading.Thread(target=timer_thread)
+    #     if __name__=='__main__':
+    #         timer.start()
+    # start_timer()
 
     # Call this function when you want to start the timer
-    start_timer()
-
+    # start_timer()
 
 addBtn = Button(root, text='add', command=add_entry)
 addBtn.pack()
@@ -114,3 +139,11 @@ startBtn = Button(root, text='start', command=printData)
 startBtn.pack()
 
 root.mainloop()
+
+
+# def append():
+#     with open('trial.txt', mode='a') as f:
+#         # for i in linksUrl:
+#         f.write('\n\t127.0.0.1\t')
+
+# append()
