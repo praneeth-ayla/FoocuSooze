@@ -19,12 +19,21 @@ linksUrl = []
 
 
 def printData():
-    
-    global linksUrl
+  
     for i in entryList:
         link = i.get()
         linksUrl.append(link)
     call2()
+    # remaining_time = timeVar.get()*60 
+    # print(remaining_time)
+
+
+def stop_timer():
+    global entryList
+    global linksUrl
+    deleteFunc()
+    root.deiconify()
+    new_window.destroy()
 
 
 def stop_timer():
@@ -38,6 +47,7 @@ def stop_timer():
 def create_new_window():
     global new_window
     global remaining_time 
+
     remaining_time = timeVar.get()*60
     root.withdraw()  # Hide the main window
     new_window = Toplevel()  # Create a new top-level window
@@ -86,7 +96,7 @@ def add_entry():
 
 
 def append():
-    with open('trial.txt', mode='a') as f:
+    with open('/etc/hosts', mode='a') as f:
         for i in linksUrl:
             f.write('\n\t127.0.0.1\t'+i)
     # return  linkUrl
@@ -95,7 +105,7 @@ def append():
 def deleteFunc():
     global entryList
     global linksUrl
-    with open('trial.txt', 'r') as file:
+    with open('/etc/hosts', 'r') as file:
         file_contents = file.read()
 
     # Step 3: Modify the contents (remove the added text)
@@ -106,12 +116,13 @@ def deleteFunc():
     file_contents = '\n'.join(lines)
 
     # Step 4: Write the modified contents back to the file
-    with open('trial.txt', 'w') as file:
+    with open('/etc/hosts', 'w') as file:
         file.write(file_contents)
 
 
 def call2():
     append()
+    
     
     create_new_window()
     print(timeVar.get())
@@ -141,9 +152,3 @@ startBtn.pack()
 root.mainloop()
 
 
-# def append():
-#     with open('trial.txt', mode='a') as f:
-#         # for i in linksUrl:
-#         f.write('\n\t127.0.0.1\t')
-
-# append()
